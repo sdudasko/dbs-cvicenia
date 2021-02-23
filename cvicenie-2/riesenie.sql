@@ -45,5 +45,54 @@ SELECT name, signed_in_at FROM (
 
 -- Alebo jednoduchym porovnavanim:
 
+SELECT name, signed_in_at FROM programmers WHERE signed_in_at > '2016-01-31' AND signed_in_at < '2016-03-01';
 
+
+-- 10. Napíšte SELECT, ktorý vráti mená všetkých programátorov a počet dní medzi dátumom ich registrácie a prvým aprílom 2016S usporiadaný od najmenšieho po najväčší.
+
+SELECT	ABS(signed_in_at - '2016-02-01') as date_diff FROM programmers ORDER BY date_diff ASC;
+
+-- 11. Napíšte SELECT, ktorý vráti label všetkých jazykov, ktoré majú aspoň jeden projekt.
+
+SELECT DISTINCT label FROM languages
+INNER JOIN projects ON languages.id = projects.language_id
+
+-- 12. Napíšte SELECT, ktorý vráti label všetkých jazykov, ktoré majú aspoň jeden projekt, ktorý začal v roku 2014.
+
+SELECT
+	projects.created_at AS proj_created_at,
+	languages.label     AS lang_label
+FROM languages INNER JOIN projects ON languages.id = projects.language_id
+WHERE EXTRACT(year FROM projects.created_at) = 2014
+
+-- 13. Napíšte SELECT, ktorý vráti mená všetkých projektov, na ktorých sa programuje v jazykoch ruby alebo python (Hint: IN).
+
+SELECT name FROM projects INNER JOIN languages ON projects.language_id = languages.id
+WHERE label IN ('ruby', 'python')
+
+-- 14. Napíšte SELECT, ktorý vráti mená všetkých python programátorov.
+
+-- Toto hadze nieco divne, neviem preco
+-- SELECT projects.id AS project_id, language_id, languages.label, projects_programmers.programmer_id, programmers.name FROM languages
+-- INNER JOIN projects ON languages.id = projects.language_id
+-- INNER JOIN projects_programmers ON projects_programmers.project_id = project_id
+-- INNER JOIN programmers ON programmers.id = programmer_id
+-- WHERE label = 'python'
+
+SELECT
+DISTINCT programmers.name FROM projects_programmers
+INNER JOIN projects ON projects.id = project_id
+INNER JOIN languages ON languages.id = projects.language_id
+INNER JOIN programmers ON programmers.id = programmer_id
+WHERE label = 'python';
+
+
+-- 15. Napíšte SELECT, ktorý vráti mená všetkých python programátorov, ktorí sú vlastníkmi (hoc aj nepython) projektu
+
+SELECT
+DISTINCT programmers.name FROM projects_programmers
+INNER JOIN projects ON projects.id = project_id
+INNER JOIN languages ON languages.id = projects.language_id
+INNER JOIN programmers ON programmers.id = programmer_id
+WHERE label = 'python' OR "owner";
 
